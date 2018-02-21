@@ -5,7 +5,7 @@
 glm::vec2 SCREEN_SIZE(800, 600);
 int width, height;
 GLuint programID, VertexArrayID, MatrixID, vertexbufferID, colorbufferID;
-glm::mat4 projection, view, model, MVP, rotate;
+glm::mat4 projection, view, model, modelView, rotate;
 
 Manager::Manager( bool bRun ): bRun( bRun ),
 pWindow( glfwGetCurrentContext() ){}
@@ -37,23 +37,23 @@ void Manager::loop(){
 	};
 	static const GLfloat colorData[] = {
         // Face 0
-		1.0f,  0.0f,  0.0f,   	0.0f,  1.0f,  0.0f,		0.0f,  0.0f,  1.0f,
-		0.0f,  0.0f,  1.0f,		0.0f,  1.0f,  0.0f,		1.0f,  0.0f,  0.0f,
+		1.0f,  1.0f,  0.0f,   	0.0f,  1.0f,  0.0f,		1.0f,  0.0f,  0.0f,
+		1.0f,  0.0f,  0.0f,		0.0f,  1.0f,  0.0f,		0.0f,  0.0f,  0.0f,
         // Face 1
-		1.0f,  0.0f,  0.0f,		0.0f,  0.0f,  1.0f,		0.0f,  0.0f,  1.0f,
-		0.0f,  0.0f,  1.0f,		0.0f,  0.0f,  1.0f,		0.0f,  1.0f,  0.0f,
+		1.0f,  1.0f,  0.0f,		1.0f,  0.0f,  0.0f,		1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,		1.0f,  0.0f,  0.0f,		1.0f,  0.0f,  1.0f,
         // Face 2
-		1.0f,  0.0f,  0.0f,		0.0f,  0.0f,  1.0f,		0.0f,  1.0f,  0.0f,
-		0.0f,  1.0f,  0.0f,		0.0f,  0.0f,  1.0f,		1.0f,  0.0f,  0.0f,
+		1.0f,  1.0f,  0.0f,		1.0f,  1.0f,  1.0f,		0.0f,  1.0f,  0.0f,
+		0.0f,  1.0f,  0.0f,		1.0f,  1.0f,  1.0f,		0.0f,  1.0f,  1.0f,
         // Face 3
-		0.0f,  0.0f,  1.0f,		0.0f,  1.0f,  0.0f,		1.0f,  0.0f,  0.0f,
-		1.0f,  0.0f,  0.0f,		0.0f,  1.0f,  0.0f,		0.0f,  0.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,		1.0f,  0.0f,  1.0f,		1.0f,  0.0f,  0.0f,
+		0.0f,  1.0f,  1.0f,		1.0f,  0.0f,  1.0f,		0.0f,  1.0f,  1.0f,
         // Face 4
-	    0.0f,  1.0f,  0.0f,		1.0f,  0.0f,  0.0f,		1.0f,  0.0f,  0.0f,
-		1.0f,  0.0f,  0.0f,		1.0f,  0.0f,  0.0f,		0.0f,  0.0f,  1.0f,
+	    0.0f,  1.0f,  0.0f,		0.0f,  1.0f,  1.0f,		0.0f,  0.0f,  0.0f,
+		0.0f,  0.0f,  0.0f,		0.0f,  1.0f,  1.0f,		0.0f,  1.0f,  1.0f,
         // Face 5
-		0.0f,  0.0f,  1.0f,		1.0f,  0.0f,  0.0f,		0.0f,  1.0f,  0.0f,
-		0.0f,  1.0f,  0.0f,		1.0f,  0.0f,  0.0f,		0.0f,  0.0f,  1.0f
+		0.0f,  0.0f,  1.0f,		0.0f,  0.0f,  0.0f,		1.0f,  0.0f,  1.0f,
+		1.0f,  0.0f,  1.0f,		0.0f,  0.0f,  0.0f,		0.0f,  0.0f,  1.0f
 	};
 
     glGenVertexArrays( 1, &VertexArrayID );
@@ -70,17 +70,13 @@ void Manager::loop(){
         colorData, GL_STATIC_DRAW );
 
     glfwGetFramebufferSize(pWindow, &width, &height);
+    glViewport( 0, 0, width, height );
     float aspect = ( float )width / ( float )height;
     projection = glm::perspective( 45.0f, aspect,
-        0.1f, 100.0f );
+        0.1f, 10.0f );
     view = glm::translate( view, glm::vec3( 0.0f , 0.0f, -2.0f ) );
     model = glm::rotate( model, 0.01f, glm::vec3( 0.0f, -1.0f, -1.0f ) );
-    MVP = model * view * projection;
-
-    glEnable( GL_DEPTH_TEST );
-    glShadeModel( GL_SMOOTH );
-    glDepthFunc( GL_LESS );
-    glClearColor( 0.1f, 0.1f, 0.1f, 0.0f );
+    modelView = model * view;
 
     while ( bRun ) {
         bRun = !glfwWindowShouldClose( pWindow );
@@ -132,6 +128,7 @@ Manager &Manager::getManager(){
         if( !glfwInit() )
             throw std::runtime_error("glfwInit failed..");
         glfwWindowHint( GLFW_SAMPLES, 4 );
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
         glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 3 );
         glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 3 );
         glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
@@ -143,12 +140,19 @@ Manager &Manager::getManager(){
         if( !pWindow )
             throw std::runtime_error( "glfwCreateWindow failed..");
 
+        glfwSetWindowUserPointer( pWindow, oManager );
         glfwSetFramebufferSizeCallback( pWindow, glfwWinSizeCallback );
         glfwMakeContextCurrent( pWindow );
+        glfwSwapInterval(1);
 
         glewExperimental = GL_TRUE;
         if( glewInit() != GLEW_OK )
             throw std::runtime_error( "glewInit failed.." );
+
+        glEnable( GL_DEPTH_TEST );
+        glShadeModel( GL_SMOOTH );
+        glDepthFunc( GL_LESS );
+        glClearColor( 0.1f, 0.1f, 0.1f, 1.0f );
 
         oManager = new Manager( true );
     }
@@ -156,6 +160,7 @@ Manager &Manager::getManager(){
 }
 void Manager::glfwWinSizeCallback( GLFWwindow *pWindow, int width, int height ){
     glViewport( 0, 0, width, height );
+    glfwGetWindowUserPointer( pWindow );
     SCREEN_SIZE = glm::vec2( width, height );
     std::cout << "Width.."<< width << "\theight.." << height << '\n';
 }
