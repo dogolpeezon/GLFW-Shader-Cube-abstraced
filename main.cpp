@@ -2,8 +2,8 @@
 
 int main(){
     std::cout << "Create Manager.." << '\n';
-    Manager *p_manager = &Manager::getManager();
-    p_manager->loop();
+    Manager *pManager = &Manager::getManager();
+    pManager->loop();
 
     std::cout << "desManager.." << '\n';
     Manager::desManager();
