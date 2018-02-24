@@ -10,3 +10,5 @@ Build:
 g++ -Wall -g -o Cube shader.cpp manager.cpp main.cpp -lGLEW -lglfw3 -lGL -lX11 -lXi -lXrandr -lXxf86vm -lXinerama -lXcursor -lrt -lm -pthread -ldl
 
 
+
+![screenshot at 2018-02-21 12-38-34](https://user-images.githubusercontent.com/26413252/36635749-9b954f42-19b2-11e8-9957-5884c8a8167e.png)
