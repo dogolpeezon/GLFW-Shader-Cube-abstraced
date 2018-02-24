@@ -8,3 +8,6 @@ Next i will attempt to refine this.. starting with indexing the vertices with El
 Build:
 
 g++ -Wall -g -o Cube shader.cpp manager.cpp main.cpp -lGLEW -lglfw3 -lGL -lX11 -lXi -lXrandr -lXxf86vm -lXinerama -lXcursor -lrt -lm -pthread -ldl
+
+
+![screenshot at 2018-02-21 12-38-34](https://user-images.githubusercontent.com/26413252/36635721-27d934c4-19b2-11e8-8edb-731e86732b68.png)
